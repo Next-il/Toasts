@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
-using HudMenu.Toasts;
+using PanoramaManager.Toasts;
 using Microsoft.Extensions.Logging;
 
 namespace ToastExample;
@@ -11,8 +11,8 @@ namespace ToastExample;
 /// <summary>
 /// A worked example of consuming the toast service from another plugin.
 ///
-/// <para>Note what this project does NOT reference: the service, HudMenu.Shared, or the layout. It
-/// compiles against <c>HudMenu.Toasts.Api.dll</c> alone and finds the implementation at runtime.
+/// <para>Note what this project does NOT reference: the service, PanoramaManager, or the layout. It
+/// compiles against <c>PanoramaManager.Toasts.Api.dll</c> alone and finds the implementation at runtime.
 /// That is the point of the capability - one server-wide notification system, and a plugin that
 /// loads whether or not it is installed.</para>
 /// </summary>
@@ -20,7 +20,7 @@ public sealed class ToastExamplePlugin : BasePlugin
 {
     public override string ModuleName        => "Toast Example";
     public override string ModuleVersion     => "1.0.0";
-    public override string ModuleAuthor      => "HudMenu";
+    public override string ModuleAuthor      => "PanoramaManager";
     public override string ModuleDescription => "Demonstrates the shared toast API.";
 
     private IToastApi? _toasts;

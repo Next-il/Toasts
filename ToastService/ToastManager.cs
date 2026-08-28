@@ -6,7 +6,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Timers;
 using Microsoft.Extensions.Logging;
 
-namespace HudMenu.Toasts.Service;
+namespace PanoramaManager.Toasts.Service;
 
 /// <summary>
 /// The implementation behind <see cref="IToastApi"/>.
@@ -51,7 +51,7 @@ internal sealed class ToastManager : IToastApi, IDisposable
 
     private readonly BasePlugin _plugin;
     private readonly ILogger    _logger;
-    private readonly MenuHandle _menu;
+    private readonly PanelHandle _menu;
 
     /// <summary>Slot state per player, keyed "placement:index".</summary>
     private readonly Dictionary<int, Dictionary<string, Slot>> _slots = new();
@@ -61,7 +61,7 @@ internal sealed class ToastManager : IToastApi, IDisposable
         _plugin = plugin;
         _logger = logger;
 
-        _menu = HudMenus.Spawn(Layout, new LayoutContract
+        _menu = Panorama.Spawn(Layout, new LayoutContract
         {
             RootPanelId  = "HudMenuRoot",
 
@@ -299,9 +299,9 @@ internal sealed class ToastManager : IToastApi, IDisposable
     /// <summary>The library closes menus on a round restart and on disconnect. When that happens the
     /// panels are gone, so the bookkeeping has to go with them or the next toast picks a slot it
     /// thinks is occupied.</summary>
-    private void OnMenuEvent(MenuEvent e)
+    private void OnMenuEvent(PanelEvent e)
     {
-        if (e.Action != MenuAction.Close)
+        if (e.Action != PanelAction.Close)
             return;
 
         if (_slots.Remove(e.Player.Slot, out var slots))

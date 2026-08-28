@@ -1,6 +1,6 @@
 using CounterStrikeSharp.API.Core;
 
-namespace HudMenu.Toasts;
+namespace PanoramaManager.Toasts;
 
 /// <summary>
 /// Everything a toast can be. Every field has a default, so the minimum is a player and a title.

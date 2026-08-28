@@ -17,11 +17,11 @@ Panorama cards with a blurred background, colour accent, optional icon, a progre
 enter/exit animations. Eight placements, each stacks four.
 
 ```
-HudMenu.Toasts.Api/   the contract other plugins reference
+PanoramaManager.Toasts.Api/   the contract other plugins reference
 ToastService/         the implementation
 ToastExample/         demo commands
 workshop/             the Panorama layout
-lib/                  HudMenu.Shared.dll + gamedata
+lib/                  PanoramaManager.dll + gamedata
 ```
 
 ## Install
@@ -29,10 +29,10 @@ lib/                  HudMenu.Shared.dll + gamedata
 **Plugins** - unzip a release over `game/csgo/addons/counterstrikesharp/`:
 
 ```
-shared/HudMenu.Toasts.Api/     <- must be in shared/, not plugins/
+shared/PanoramaManager.Toasts.Api/     <- must be in shared/, not plugins/
 plugins/ToastService/
 plugins/ToastExample/
-gamedata/hudmenu.json
+gamedata/panoramamanager.json
 ```
 
 **Layout** - copy `workshop/panorama/` into your addon's content folder and build it:
@@ -50,19 +50,19 @@ layouts. If the built VPK has no `toasts.vxml_c`, add the panorama folders to th
 Mount the addon, then check:
 
 ```
-css_hudmenu_diag
+css_panorama_diag
 css_toast
 ```
 
 ## Using it from your plugin
 
-Reference the API DLL. Take it from a release, or from `shared/HudMenu.Toasts.Api/` on a server
+Reference the API DLL. Take it from a release, or from `shared/PanoramaManager.Toasts.Api/` on a server
 running it.
 
 ```xml
 <ItemGroup>
-  <Reference Include="HudMenu.Toasts.Api">
-    <HintPath>lib\HudMenu.Toasts.Api.dll</HintPath>
+  <Reference Include="PanoramaManager.Toasts.Api">
+    <HintPath>lib\PanoramaManager.Toasts.Api.dll</HintPath>
     <Private>false</Private>
   </Reference>
 </ItemGroup>
@@ -71,7 +71,7 @@ running it.
 `Private` must be `false`, and you do not ship the DLL - the server has it in `shared/`.
 
 ```csharp
-using HudMenu.Toasts;
+using PanoramaManager.Toasts;
 
 public class MyPlugin : BasePlugin
 {
@@ -167,12 +167,19 @@ dotnet build Toasts.slnx -c Release
 
 CI builds every push to `main` and cuts a release automatically - `v1`, `v2`, `v3`. PRs build without releasing.
 
-`lib/HudMenu.Shared.dll` is committed so a clone builds standalone. Replace it to pick up a newer
+`lib/PanoramaManager.dll` is committed so a clone builds standalone. Replace it to pick up a newer
 library.
+
+## Related
+
+| | |
+|---|---|
+| [PanoramaManager](https://github.com/Next-il/PanoramaManager) | The library this is built on. Drive any Panorama layout from C# |
+| [PanoramaHUD-Skills](https://github.com/Next-il/PanoramaHUD-Skills) | Agent skills for writing Panorama layouts |
 
 ## Credits
 
-Engine signatures in `lib/hudmenu.json` derive from
+Engine signatures in `lib/panoramamanager.json` derive from
 [cs2-customhud](https://gitlab.com/cs2-server-plugins/cs2-customhud).
 
 MIT.

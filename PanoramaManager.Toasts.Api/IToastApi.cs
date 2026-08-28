@@ -1,7 +1,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 
-namespace HudMenu.Toasts;
+namespace PanoramaManager.Toasts;
 
 /// <summary>
 /// Server-wide toast notifications, shared between plugins.

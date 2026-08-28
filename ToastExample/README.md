@@ -34,5 +34,5 @@ the built DLL instead - see the main README.
 
 ## If it says the service is not installed
 
-`HudMenu.Toasts.Api.dll` is not in `counterstrikesharp/shared/HudMenu.Toasts.Api/`, or ToastService
-is not loaded. `css_hudmenu_diag` will say which.
+`PanoramaManager.Toasts.Api.dll` is not in `counterstrikesharp/shared/PanoramaManager.Toasts.Api/`, or ToastService
+is not loaded. `css_panorama_diag` will say which.

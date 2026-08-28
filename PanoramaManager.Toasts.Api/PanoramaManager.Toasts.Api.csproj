@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>HudMenu.Toasts.Api</AssemblyName>
-    <RootNamespace>HudMenu.Toasts</RootNamespace>
-    <OutputPath>$(MSBuildThisFileDirectory)..\.build\shared\HudMenu.Toasts.Api\</OutputPath>
+    <AssemblyName>PanoramaManager.Toasts.Api</AssemblyName>
+    <RootNamespace>PanoramaManager.Toasts</RootNamespace>
+    <OutputPath>$(MSBuildThisFileDirectory)..\.build\shared\PanoramaManager.Toasts.Api\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
