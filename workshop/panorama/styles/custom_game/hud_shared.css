@@ -58,14 +58,18 @@
 /*
     Full-screen wrapper. The root panel may not carry an id, so this is the anonymous one.
 
-    z-index lives HERE, not on the card. It only orders siblings within one parent, so putting it on
-    an inner panel cannot lift the layout above the game's own HUD - it has to be on the outermost
-    panel of the layout. That is why the crosshair kept drawing on top.
+    z-index lives HERE, on the outermost panel, and is deliberately enormous. It only orders siblings
+    within one parent, so an inner panel cannot lift the layout above the game's own HUD no matter
+    what value it carries. This is the shape the CS2 modding community settled on.
+
+    overflow: noclip lets a child draw outside these bounds - a dropdown or a tooltip that would
+    otherwise be cut off at the screen wrapper.
 */
 .hud-screen {
     width: 100%;
     height: 100%;
-    z-index: 100;
+    overflow: noclip;
+    z-index: 99999;
 }
 
 /*

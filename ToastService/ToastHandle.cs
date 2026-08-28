@@ -1,6 +1,6 @@
 using CounterStrikeSharp.API.Core;
 
-namespace HudMenu.Toasts.Service;
+namespace PanoramaManager.Toasts.Service;
 
 /// <summary>
 /// The handle a caller gets back from <see cref="IToastApi.Show(ToastOptions)"/>.

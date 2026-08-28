@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>ToastService</AssemblyName>
-    <RootNamespace>HudMenu.Toasts.Service</RootNamespace>
+    <RootNamespace>PanoramaManager.Toasts.Service</RootNamespace>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <OutputPath>$(MSBuildThisFileDirectory)..\.build\plugins\ToastService\</OutputPath>
     <AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
@@ -11,11 +11,11 @@
 
   <ItemGroup>
     <!--
-        HudMenu.Shared as a DLL, not a project: this repo stands alone and a clone has no HudMenu
+        PanoramaManager as a DLL, not a project: this repo stands alone and a clone has no PanoramaManager
         source tree beside it. The DLL is committed in lib/ and copies next to the plugin on build.
     -->
-    <Reference Include="HudMenu.Shared">
-      <HintPath>..\lib\HudMenu.Shared.dll</HintPath>
+    <Reference Include="PanoramaManager">
+      <HintPath>..\lib\PanoramaManager.dll</HintPath>
       <Private>true</Private>
     </Reference>
 
@@ -25,7 +25,7 @@
         type. A private copy here would make the capability cast fail with a type mismatch that
         reads like the service simply is not installed.
     -->
-    <ProjectReference Include="..\HudMenu.Toasts.Api\HudMenu.Toasts.Api.csproj" Private="false" />
+    <ProjectReference Include="..\PanoramaManager.Toasts.Api\PanoramaManager.Toasts.Api.csproj" Private="false" />
   </ItemGroup>
 
   <ItemGroup>

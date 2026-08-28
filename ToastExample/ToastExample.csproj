@@ -13,12 +13,12 @@
     <!--
         ProjectReference only because this example lives inside the API's repo. Your plugin uses:
 
-            <Reference Include="HudMenu.Toasts.Api">
-              <HintPath>lib\HudMenu.Toasts.Api.dll</HintPath>
+            <Reference Include="PanoramaManager.Toasts.Api">
+              <HintPath>lib\PanoramaManager.Toasts.Api.dll</HintPath>
               <Private>false</Private>
             </Reference>
     -->
-    <ProjectReference Include="..\HudMenu.Toasts.Api\HudMenu.Toasts.Api.csproj" Private="false" />
+    <ProjectReference Include="..\PanoramaManager.Toasts.Api\PanoramaManager.Toasts.Api.csproj" Private="false" />
   </ItemGroup>
 
   <ItemGroup>

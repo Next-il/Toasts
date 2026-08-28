@@ -2,12 +2,12 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using Microsoft.Extensions.Logging;
 
-namespace HudMenu.Toasts.Service;
+namespace PanoramaManager.Toasts.Service;
 
 /// <summary>
 /// Provides <see cref="IToastApi"/> to every other plugin on the server.
 ///
-/// <para>Install once; consumers reference nothing but <c>HudMenu.Toasts.Api.dll</c> and resolve the
+/// <para>Install once; consumers reference nothing but <c>PanoramaManager.Toasts.Api.dll</c> and resolve the
 /// capability at runtime. If this plugin is not installed they get null and carry on - a missing
 /// notification system should never stop a plugin loading.</para>
 /// </summary>
@@ -15,14 +15,14 @@ public sealed class ToastServicePlugin : BasePlugin
 {
     public override string ModuleName        => "Toast Service";
     public override string ModuleVersion     => "1.0.0";
-    public override string ModuleAuthor      => "HudMenu";
+    public override string ModuleAuthor      => "PanoramaManager";
     public override string ModuleDescription => "Shared toast notifications for CounterStrikeSharp plugins.";
 
     private ToastManager? _manager;
 
     public override void Load(bool hotReload)
     {
-        HudMenus.Init(this);
+        Panorama.Init(this);
 
         _manager = new ToastManager(this, Logger);
 
@@ -35,7 +35,7 @@ public sealed class ToastServicePlugin : BasePlugin
             "[Toasts] ready - capability '{Name}', {Depth} deep per placement.",
             ToastApi.CapabilityName, _manager.StackDepth);
 
-        if (!HudMenus.CanWritePerPlayerText)
+        if (!Panorama.CanWritePerPlayerText)
         {
             Logger.LogWarning(
                 "[Toasts] per-player text is unavailable on this build, so every viewer of a toast "
@@ -48,6 +48,6 @@ public sealed class ToastServicePlugin : BasePlugin
         _manager?.Dispose();
         _manager = null;
 
-        HudMenus.Shutdown();
+        Panorama.Shutdown();
     }
 }
