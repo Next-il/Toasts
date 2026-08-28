@@ -3,22 +3,13 @@
   <PropertyGroup>
     <AssemblyName>ToastService</AssemblyName>
     <RootNamespace>PanoramaManager.Toasts.Service</RootNamespace>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutputPath>$(MSBuildThisFileDirectory)..\.build\plugins\ToastService\</OutputPath>
     <AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <!--
-        PanoramaManager as a DLL, not a project: this repo stands alone and a clone has no PanoramaManager
-        source tree beside it. The DLL is committed in lib/ and copies next to the plugin on build.
-    -->
-    <Reference Include="PanoramaManager">
-      <HintPath>..\lib\PanoramaManager.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-
     <!--
         Private=false on purpose. The API assembly must load into CounterStrikeSharp's DEFAULT load
         context, from addons/counterstrikesharp/shared/, so every plugin sees the SAME IToastApi
@@ -31,6 +22,10 @@
   <ItemGroup>
     <PackageReference Include="CounterStrikeSharp.API" Version="$(CounterStrikeSharpVersion)"
                       ExcludeAssets="runtime" />
+
+    <!-- Copies next to the plugin, which is what CounterStrikeSharp needs - each plugin loads
+         through a context that probes its own folder. -->
+    <PackageReference Include="PanoramaManager" Version="$(PanoramaManagerVersion)" />
   </ItemGroup>
 
 </Project>

@@ -21,7 +21,7 @@ PanoramaManager.Toasts.Api/   the contract other plugins reference
 ToastService/         the implementation
 ToastExample/         demo commands
 workshop/             the Panorama layout
-lib/                  PanoramaManager.dll + gamedata
+lib/                  panoramamanager.json - the engine signatures, for the server
 ```
 
 ## Install
@@ -167,8 +167,9 @@ dotnet build Toasts.slnx -c Release
 
 CI builds every push to `main` and cuts a release automatically - `v1`, `v2`, `v3`. PRs build without releasing.
 
-`lib/PanoramaManager.dll` is committed so a clone builds standalone. Replace it to pick up a newer
-library.
+The library comes from nuget.org - bump `PanoramaManagerVersion` in `Directory.Build.props` to
+pick up a newer one. `lib/panoramamanager.json` is the server-side gamedata file; it goes in
+`counterstrikesharp/gamedata/`.
 
 ## Related
 

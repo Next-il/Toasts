@@ -31,10 +31,6 @@ public sealed class ToastServicePlugin : BasePlugin
         // loaded before this one would otherwise see nothing.
         Capabilities.RegisterPluginCapability(ToastApi.Capability, () => _manager);
 
-        Logger.LogInformation(
-            "[Toasts] ready - capability '{Name}', {Depth} deep per placement.",
-            ToastApi.CapabilityName, _manager.StackDepth);
-
         if (!Panorama.CanWritePerPlayerText)
         {
             Logger.LogWarning(

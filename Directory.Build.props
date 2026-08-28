@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <CounterStrikeSharpVersion>1.0.373</CounterStrikeSharpVersion>
+    <PanoramaManagerVersion>0.1.0</PanoramaManagerVersion>
   </PropertyGroup>
 
   <PropertyGroup>
