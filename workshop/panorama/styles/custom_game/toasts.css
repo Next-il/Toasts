@@ -1,0 +1,207 @@
+/*
+    toasts - notification cards, styled to match the menus.
+
+    Include hud_shared.vcss_c first.
+
+    THE PROGRESS BAR IS A CSS TRANSITION, NOT A TIMER. The server cannot animate a width - it can set
+    a string or toggle a class. So the bar starts at 100%, the service picks a dur-* class for the
+    duration, and toggling "run" moves it to 0%. The client animates the whole thing. The alternative
+    is a 10Hz driver rewriting a class every tick for every toast on the server, which is a lot of
+    network traffic for a progress bar.
+
+    Durations are therefore a fixed set. The service snaps to the nearest, so a 7-second toast drains
+    over 8. Adding one is a line here and a new VPK.
+*/
+
+.toast-screen {
+    width: 100%;
+    height: 100%;
+}
+
+/* Placements ---------------------------------------------------------------
+    Each is an independent stack. They flow downward except the bottom row, which flows up so a new
+    toast appears nearest the edge and pushes older ones away from it.
+*/
+.toast-stack {
+    flow-children: down;
+    width: 300px;
+
+    /*
+        Let a toast leave its stack. The default is "squish", which keeps children inside the panel -
+        so a slide-in appeared to start at the container edge rather than off-screen, because that is
+        literally as far out as it was allowed to be. Valve's own HUD uses noclip for the same reason.
+    */
+    overflow: noclip noclip;
+}
+
+.stack-tl { horizontal-align: left;   vertical-align: top;    margin: 60px 0px 0px 20px; }
+.stack-tc { horizontal-align: center; vertical-align: top;    margin-top: 60px; }
+.stack-tr { horizontal-align: right;  vertical-align: top;    margin: 60px 20px 0px 0px; }
+.stack-ml { horizontal-align: left;   vertical-align: center; margin-left: 20px; }
+.stack-mr { horizontal-align: right;  vertical-align: center; margin-right: 20px; }
+.stack-bl { horizontal-align: left;   vertical-align: bottom; margin: 0px 0px 120px 20px; flow-children: up; }
+.stack-bc { horizontal-align: center; vertical-align: bottom; margin-bottom: 120px; flow-children: up; }
+.stack-br { horizontal-align: right;  vertical-align: bottom; margin: 0px 20px 120px 0px; flow-children: up; }
+
+/* The card ----------------------------------------------------------------- */
+
+.toast {
+    width: 100%;
+    flow-children: down;
+    margin-bottom: 8px;
+    border-left: 3px solid #5a636d;
+
+    /*
+        world-blur, not background-blur. background-blur blurs the UI layers behind a panel, which
+        over the 3D scene is nothing at all - Valve does not use it anywhere. Every blurred panel in
+        the game, from the deathnotices to the radar to the buy menu, uses world-blur.
+    */
+    world-blur: gaussian(3.0);
+    background-color: gradient(linear, 0% 0%, 0% 100%, from(#12171ed6), to(#0b0f14e0));
+
+    opacity: 0;
+    transition-property: opacity, transform;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-out;
+}
+
+/*
+    Entry and exit directions. The class sets the resting offset; "show" returns it to zero, and
+    removing "show" sends it back the way it came. Swapping the anim class before hiding is what
+    lets a toast leave in a different direction than it arrived.
+*/
+/*
+    Far enough to actually be off-screen. The stack is 300px wide sitting 20px from the edge, so 340
+    clears it completely - anything less and the toast visibly starts partway in.
+*/
+.toast.anim-from-left   { transform: translateX(-340px); }
+.toast.anim-from-right  { transform: translateX(340px); }
+.toast.anim-from-top    { transform: translateY(-140px); }
+.toast.anim-from-bottom { transform: translateY(140px); }
+.toast.anim-fade        { transform: translateY(0px); }
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0px);
+}
+
+.toast-body {
+    flow-children: right;
+    width: 100%;
+    padding: 10px 12px;
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    wash-color: #c8ced6;
+    vertical-align: center;
+    visibility: collapse;
+}
+
+/* Only takes up space once the service has given it artwork. */
+.toast-icon.has-icon { visibility: visible; }
+
+.toast-copy {
+    flow-children: down;
+    width: fill-parent-flow(1.0);
+    vertical-align: center;
+}
+
+.toast-title {
+    width: 100%;
+    font-family: Stratum2 Medium Condensed;
+    font-size: 16px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.toast-desc {
+    width: 100%;
+    font-family: Stratum2;
+    font-size: 12px;
+    color: #9aa2ac;
+    margin-top: 2px;
+}
+
+/* Blank description collapses the line rather than leaving a gap under the title. */
+.toast-desc.empty { visibility: collapse; }
+
+/* Progress ----------------------------------------------------------------- */
+
+.toast-track {
+    width: 100%;
+    height: 3px;
+    background-color: #ffffff10;
+    visibility: collapse;
+}
+
+.toast-track.has-progress { visibility: visible; }
+
+.toast-bar {
+    width: 100%;
+    height: 100%;
+    background-color: #8b939c;
+    transition-property: width;
+    transition-timing-function: linear;
+
+    /*
+        Zero by default so clearing "run" snaps the bar back instead of animating it. The service
+        removes the dur-* class first for the same reason - with one still applied, dropping "run"
+        transitions the width BACKWARDS to 100% over that duration, and a reused slot shows a bar
+        slowly refilling rather than a fresh one draining.
+    */
+    transition-duration: 0.0s;
+}
+
+/* Set by the service alongside a dur-* class; the client animates the drain. */
+.toast-bar.run { width: 0%; }
+
+.toast-bar.dur-2 { transition-duration: 2.0s; }
+.toast-bar.dur-3 { transition-duration: 3.0s; }
+.toast-bar.dur-4 { transition-duration: 4.0s; }
+.toast-bar.dur-5 { transition-duration: 5.0s; }
+.toast-bar.dur-6 { transition-duration: 6.0s; }
+.toast-bar.dur-8 { transition-duration: 8.0s; }
+.toast-bar.dur-10 { transition-duration: 10.0s; }
+.toast-bar.dur-12 { transition-duration: 12.0s; }
+.toast-bar.dur-15 { transition-duration: 15.0s; }
+.toast-bar.dur-20 { transition-duration: 20.0s; }
+.toast-bar.dur-30 { transition-duration: 30.0s; }
+
+/* Colours ------------------------------------------------------------------ */
+
+.toast.color-teal { border-left-color: #2ec4b6; }
+.toast.color-teal .toast-title { color: #2ec4b6; }
+.toast.color-teal .toast-bar { background-color: #2ec4b6; }
+.toast.color-danger { border-left-color: #e0432f; }
+.toast.color-danger .toast-title { color: #e0432f; }
+.toast.color-danger .toast-bar { background-color: #e0432f; }
+.toast.color-warn { border-left-color: #f0a531; }
+.toast.color-warn .toast-title { color: #f0a531; }
+.toast.color-warn .toast-bar { background-color: #f0a531; }
+.toast.color-good { border-left-color: #4caf6d; }
+.toast.color-good .toast-title { color: #4caf6d; }
+.toast.color-good .toast-bar { background-color: #4caf6d; }
+.toast.color-info { border-left-color: #56a0dd; }
+.toast.color-info .toast-title { color: #56a0dd; }
+.toast.color-info .toast-bar { background-color: #56a0dd; }
+.toast.color-purple { border-left-color: #9b6cd6; }
+.toast.color-purple .toast-title { color: #9b6cd6; }
+.toast.color-purple .toast-bar { background-color: #9b6cd6; }
+
+/* Icons -------------------------------------------------------------------- */
+
+.icon-alert { background-image: url("s2r://panorama/images/icons/ui/alert.vsvg"); }
+.icon-kill { background-image: url("s2r://panorama/images/icons/ui/kill.vsvg"); }
+.icon-bullet { background-image: url("s2r://panorama/images/icons/ui/bullet.vsvg"); }
+.icon-crosshair { background-image: url("s2r://panorama/images/icons/ui/crosshair_circle.vsvg"); }
+.icon-defuser { background-image: url("s2r://panorama/images/icons/ui/defuser.vsvg"); }
+.icon-c4 { background-image: url("s2r://panorama/images/icons/ui/c4.vsvg"); }
+.icon-armor { background-image: url("s2r://panorama/images/icons/ui/armor.vsvg"); }
+.icon-money { background-image: url("s2r://panorama/images/icons/ui/money.vsvg"); }

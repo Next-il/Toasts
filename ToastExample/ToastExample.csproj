@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ToastExample</AssemblyName>
+    <RootNamespace>ToastExample</RootNamespace>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <OutputPath>$(MSBuildThisFileDirectory)..\.build\plugins\ToastExample\</OutputPath>
+    <AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+        The ONLY reference needed to consume toasts. Not the service, not HudMenu.Shared, not the
+        layout. Private=false because this type must resolve from counterstrikesharp/shared/ at
+        runtime - a private copy is a different type and the capability returns null.
+    -->
+    <ProjectReference Include="..\HudMenu.Toasts.Api\HudMenu.Toasts.Api.csproj" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.API" Version="$(CounterStrikeSharpVersion)"
+                      ExcludeAssets="runtime" />
+  </ItemGroup>
+
+</Project>

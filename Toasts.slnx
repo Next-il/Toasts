@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="HudMenu.Toasts.Api/HudMenu.Toasts.Api.csproj" />
+  <Project Path="ToastService/ToastService.csproj" />
+  <Project Path="ToastExample/ToastExample.csproj" />
+</Solution>

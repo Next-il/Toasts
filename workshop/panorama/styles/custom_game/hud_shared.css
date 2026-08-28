@@ -1,0 +1,217 @@
+/*
+    hud_shared - the primitives every HudMenu layout needs, plus a reusable card.
+
+    Include it first, then your skin:
+
+        <styles>
+            <include src="s2r://panorama/styles/custom_game/hud_shared.vcss_c" />
+            <include src="s2r://panorama/styles/custom_game/my_layout.vcss_c" />
+        </styles>
+
+    Shared stylesheets work - the 19-layout kit in the community kit in the skills bundle does exactly this with one
+    vcss behind all of them. Each layout compiles to its own .vxml_c and they all resolve the same
+    .vcss_c.
+
+    TWO KINDS OF THING LIVE HERE:
+
+    1. Contract classes the C# drives by name - .hidden, .disabled, .anchor-*. A skin that redefines
+       these differently is a skin that breaks the contract.
+
+    2. A card. Header, body, footer, close button, primary button, and the reveal animation, so a new
+       layout is markup plus whatever is actually specific to it. Everything is prefixed hud- and
+       nothing here knows what any particular menu contains.
+
+    A skin can still override any of it - later rules win - but starting from this means a second
+    layout does not re-derive a header from scratch.
+*/
+
+/* ---------------------------------------------------------------- contract */
+
+/*
+    LayoutContract.HiddenClass. The single most important rule in the project: collapse removes the
+    panel from layout, so an unused row leaves no gap. opacity or a transparent background would
+    leave holes wherever a list is shorter than its pool.
+*/
+.hidden {
+    visibility: collapse;
+}
+
+/* LayoutContract.DisabledClass. Clicks are dropped server-side regardless; this is the visual half. */
+.disabled {
+    opacity: 0.35;
+}
+
+/*
+    Placement, driven by SetVariant("anchor", "..."). The server cannot send coordinates, so the
+    positions are named here and the plugin picks one. Applies to the root panel.
+*/
+.anchor-tl     { horizontal-align: left;   vertical-align: top; }
+.anchor-tr     { horizontal-align: right;  vertical-align: top; }
+.anchor-bl     { horizontal-align: left;   vertical-align: bottom; }
+.anchor-br     { horizontal-align: right;  vertical-align: bottom; }
+.anchor-top    { horizontal-align: center; vertical-align: top; }
+.anchor-bottom { horizontal-align: center; vertical-align: bottom; }
+.anchor-center { horizontal-align: center; vertical-align: center; }
+
+/* ------------------------------------------------------------------- shell */
+
+/*
+    Full-screen wrapper. The root panel may not carry an id, so this is the anonymous one.
+
+    z-index lives HERE, not on the card. It only orders siblings within one parent, so putting it on
+    an inner panel cannot lift the layout above the game's own HUD - it has to be on the outermost
+    panel of the layout. That is why the crosshair kept drawing on top.
+*/
+.hud-screen {
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+}
+
+/*
+    The reveal. Sits at opacity 0 offset downward and gains "show" when the server opens the menu,
+    so the transition plays both ways. Pick it with new LayoutContract { RevealClass = "show" }.
+
+    A layout that collapses its root with .hidden instead cannot animate - a collapsed panel is out
+    of layout and has nothing to animate from. The two are alternatives, not additions.
+
+    A skin sets its own width; there is no sensible shared default for that.
+*/
+.hud-root {
+    flow-children: down;
+    horizontal-align: center;
+    vertical-align: center;
+
+    opacity: 0;
+    transform: translateY(28px);
+    transition-property: opacity, transform;
+    transition-duration: 0.16s;
+    transition-timing-function: ease-out;
+}
+
+.hud-root.show {
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+/*
+    The card itself. Square corners and no drop shadow on purpose - both read as a floating dialog,
+    and this sits over a 3D scene where a hard edge looks deliberate and a soft one looks like a
+    rendering artefact.
+
+    world-blur is what blurs the 3D scene behind the card. The alpha has to stay well under ff or
+    there is nothing to see through.
+*/
+.hud-card {
+    border-left: 3px solid #f0a531;
+    /* world-blur reaches the 3D scene; background-blur only blurs UI behind UI and does nothing
+       here. Valve uses world-blur on every blurred HUD panel in the game. */
+    world-blur: gaussian(3.0);
+    background-color: gradient(linear, 0% 0%, 0% 100%, from(#12171ed6), to(#0b0f14e0));
+}
+
+/*
+    Accent palette, driven by SetVariant("accent", "red"). The server cannot send a colour, so the
+    options are named here. Only the edge changes, so a new colour is one line - be generous, since
+    adding one later means shipping a new VPK.
+*/
+.hud-card.accent-gold   { border-left-color: #f0a531; }
+.hud-card.accent-red    { border-left-color: #e0432f; }
+.hud-card.accent-blue   { border-left-color: #56a0dd; }
+.hud-card.accent-green  { border-left-color: #4caf6d; }
+.hud-card.accent-purple { border-left-color: #9b6cd6; }
+.hud-card.accent-plain  { border-left-color: #5a636d; }
+
+/* ------------------------------------------------------------------ header */
+
+.hud-head {
+    flow-children: right;
+    width: 100%;
+    height: 48px;
+    padding: 0px 16px;
+    border-bottom: 1px solid #ffffff0f;
+}
+
+.hud-title {
+    width: fill-parent-flow(1.0);
+    font-family: Stratum2 Medium Condensed;
+    font-size: 17px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    vertical-align: center;
+}
+
+.hud-tag {
+    font-family: Stratum2 Mono;
+    font-size: 11px;
+    color: #61686f;
+    text-transform: uppercase;
+    vertical-align: center;
+    margin-right: 12px;
+}
+
+.hud-exit {
+    width: 20px;
+    height: 20px;
+    vertical-align: center;
+    transition-property: background-color;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+}
+
+.hud-exit:hover { background-color: #e0432f; }
+
+/*
+    No height on the label. A label at height:100% fills its parent, and vertical-align then has
+    nothing left to centre - the text renders at the top of the box it was given.
+*/
+.hud-x {
+    width: 100%;
+    font-size: 12px;
+    color: #9aa2ac;
+    text-align: center;
+    vertical-align: center;
+}
+
+/* ------------------------------------------------------------------ footer */
+
+.hud-foot {
+    flow-children: right;
+    width: 100%;
+    padding: 10px 16px 12px 16px;
+    border-top: 1px solid #ffffff0f;
+}
+
+.hud-hint {
+    width: fill-parent-flow(1.0);
+    font-family: Stratum2 Mono;
+    font-size: 10px;
+    color: #4b525a;
+    text-transform: uppercase;
+    vertical-align: center;
+}
+
+.hud-btn {
+    width: 104px;
+    height: 30px;
+    border: 1px solid #4caf6d66;
+    background-color: #4caf6d33;
+    transition-property: background-color;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+}
+
+.hud-btn:hover { background-color: #4caf6d55; }
+
+/* No letter-spacing: it applies after the last character too, and that trailing space is counted in
+   the text width, so centred text drifts left. */
+.hud-btn-lbl {
+    width: 100%;
+    font-family: Stratum2 Medium Condensed;
+    font-size: 13px;
+    color: #ffffff;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: center;
+}

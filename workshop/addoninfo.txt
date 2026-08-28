@@ -1,0 +1,4 @@
+"AddonInfo"
+{
+	"title"	"CS2 Toasts"
+}

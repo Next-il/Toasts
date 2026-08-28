@@ -1,0 +1,438 @@
+<root>
+	<styles>
+		<include src="s2r://panorama/styles/custom_game/hud_shared.vcss_c" />
+		<include src="s2r://panorama/styles/custom_game/toasts.vcss_c" />
+	</styles>
+
+	<!--
+		Toast notifications. 8 placements x 4 slots = 32 toasts.
+
+		NOTHING HERE IS CLICKABLE. hittest="false" on every panel, and the service opens this layout
+		with CaptureInput = false. A notification that pulls up a cursor and stops the player aiming
+		is worse than no notification.
+
+		STACKING IS THE ROW-POOL TRICK AGAIN. A stack is a flowing column of 4 slots; an unused one
+		carries "hidden", which collapses it out of layout entirely. So the service just picks the
+		lowest free slot, and when a toast in the middle expires the ones below it close the gap on
+		their own with no re-render.
+
+		DRIVEN BY, per toast:
+		  t_{place}_{n}         hidden    - free slot, collapsed
+		  t_{place}_{n}         show      - on screen; removing it plays the exit transition
+		  t_{place}_{n}         color-*   - accent, or none for the neutral card
+		  t_{place}_{n}         anim-*    - which direction it enters and leaves from
+		  t_{place}_{n}_title   {s:}      - headline
+		  t_{place}_{n}_desc    {s:}      - body, blank collapses the line
+		  t_{place}_{n}_icon    icon-*    - artwork, or none
+		  t_{place}_{n}_bar     dur-*     - how long the progress bar takes to drain
+		  t_{place}_{n}_bar     run       - starts it draining
+
+		The root carries "hidden" as authored: a custom_hud_layout shows its layout to EVERY player,
+		and per-player state only overlays. Without it, every player on the server sees an empty
+		container the moment the entity spawns.
+	-->
+	<Panel class="hud-screen" hittest="false">
+		<Panel id="HudMenuRoot" class="toast-screen hidden" hittest="false">
+			<Panel class="toast-stack stack-tl" hittest="false">
+				<Panel id="t_tl_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tl_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tl_0_title}" />
+							<Label class="toast-desc" text="{s:t_tl_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tl_0_track" class="toast-track" hittest="false">
+						<Panel id="t_tl_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tl_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tl_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tl_1_title}" />
+							<Label class="toast-desc" text="{s:t_tl_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tl_1_track" class="toast-track" hittest="false">
+						<Panel id="t_tl_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tl_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tl_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tl_2_title}" />
+							<Label class="toast-desc" text="{s:t_tl_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tl_2_track" class="toast-track" hittest="false">
+						<Panel id="t_tl_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tl_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tl_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tl_3_title}" />
+							<Label class="toast-desc" text="{s:t_tl_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tl_3_track" class="toast-track" hittest="false">
+						<Panel id="t_tl_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-tc" hittest="false">
+				<Panel id="t_tc_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tc_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tc_0_title}" />
+							<Label class="toast-desc" text="{s:t_tc_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tc_0_track" class="toast-track" hittest="false">
+						<Panel id="t_tc_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tc_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tc_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tc_1_title}" />
+							<Label class="toast-desc" text="{s:t_tc_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tc_1_track" class="toast-track" hittest="false">
+						<Panel id="t_tc_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tc_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tc_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tc_2_title}" />
+							<Label class="toast-desc" text="{s:t_tc_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tc_2_track" class="toast-track" hittest="false">
+						<Panel id="t_tc_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tc_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tc_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tc_3_title}" />
+							<Label class="toast-desc" text="{s:t_tc_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tc_3_track" class="toast-track" hittest="false">
+						<Panel id="t_tc_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-tr" hittest="false">
+				<Panel id="t_tr_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tr_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tr_0_title}" />
+							<Label class="toast-desc" text="{s:t_tr_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tr_0_track" class="toast-track" hittest="false">
+						<Panel id="t_tr_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tr_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tr_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tr_1_title}" />
+							<Label class="toast-desc" text="{s:t_tr_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tr_1_track" class="toast-track" hittest="false">
+						<Panel id="t_tr_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tr_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tr_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tr_2_title}" />
+							<Label class="toast-desc" text="{s:t_tr_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tr_2_track" class="toast-track" hittest="false">
+						<Panel id="t_tr_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_tr_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_tr_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_tr_3_title}" />
+							<Label class="toast-desc" text="{s:t_tr_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_tr_3_track" class="toast-track" hittest="false">
+						<Panel id="t_tr_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-ml" hittest="false">
+				<Panel id="t_ml_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_ml_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_ml_0_title}" />
+							<Label class="toast-desc" text="{s:t_ml_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_ml_0_track" class="toast-track" hittest="false">
+						<Panel id="t_ml_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_ml_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_ml_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_ml_1_title}" />
+							<Label class="toast-desc" text="{s:t_ml_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_ml_1_track" class="toast-track" hittest="false">
+						<Panel id="t_ml_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_ml_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_ml_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_ml_2_title}" />
+							<Label class="toast-desc" text="{s:t_ml_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_ml_2_track" class="toast-track" hittest="false">
+						<Panel id="t_ml_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_ml_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_ml_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_ml_3_title}" />
+							<Label class="toast-desc" text="{s:t_ml_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_ml_3_track" class="toast-track" hittest="false">
+						<Panel id="t_ml_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-mr" hittest="false">
+				<Panel id="t_mr_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_mr_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_mr_0_title}" />
+							<Label class="toast-desc" text="{s:t_mr_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_mr_0_track" class="toast-track" hittest="false">
+						<Panel id="t_mr_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_mr_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_mr_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_mr_1_title}" />
+							<Label class="toast-desc" text="{s:t_mr_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_mr_1_track" class="toast-track" hittest="false">
+						<Panel id="t_mr_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_mr_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_mr_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_mr_2_title}" />
+							<Label class="toast-desc" text="{s:t_mr_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_mr_2_track" class="toast-track" hittest="false">
+						<Panel id="t_mr_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_mr_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_mr_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_mr_3_title}" />
+							<Label class="toast-desc" text="{s:t_mr_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_mr_3_track" class="toast-track" hittest="false">
+						<Panel id="t_mr_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-bl" hittest="false">
+				<Panel id="t_bl_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bl_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bl_0_title}" />
+							<Label class="toast-desc" text="{s:t_bl_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bl_0_track" class="toast-track" hittest="false">
+						<Panel id="t_bl_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_bl_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bl_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bl_1_title}" />
+							<Label class="toast-desc" text="{s:t_bl_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bl_1_track" class="toast-track" hittest="false">
+						<Panel id="t_bl_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_bl_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bl_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bl_2_title}" />
+							<Label class="toast-desc" text="{s:t_bl_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bl_2_track" class="toast-track" hittest="false">
+						<Panel id="t_bl_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_bl_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bl_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bl_3_title}" />
+							<Label class="toast-desc" text="{s:t_bl_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bl_3_track" class="toast-track" hittest="false">
+						<Panel id="t_bl_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-bc" hittest="false">
+				<Panel id="t_bc_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bc_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bc_0_title}" />
+							<Label class="toast-desc" text="{s:t_bc_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bc_0_track" class="toast-track" hittest="false">
+						<Panel id="t_bc_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_bc_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bc_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bc_1_title}" />
+							<Label class="toast-desc" text="{s:t_bc_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bc_1_track" class="toast-track" hittest="false">
+						<Panel id="t_bc_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_bc_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bc_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bc_2_title}" />
+							<Label class="toast-desc" text="{s:t_bc_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bc_2_track" class="toast-track" hittest="false">
+						<Panel id="t_bc_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_bc_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_bc_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_bc_3_title}" />
+							<Label class="toast-desc" text="{s:t_bc_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_bc_3_track" class="toast-track" hittest="false">
+						<Panel id="t_bc_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+			<Panel class="toast-stack stack-br" hittest="false">
+				<Panel id="t_br_0" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_br_0_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_br_0_title}" />
+							<Label class="toast-desc" text="{s:t_br_0_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_br_0_track" class="toast-track" hittest="false">
+						<Panel id="t_br_0_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_br_1" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_br_1_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_br_1_title}" />
+							<Label class="toast-desc" text="{s:t_br_1_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_br_1_track" class="toast-track" hittest="false">
+						<Panel id="t_br_1_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_br_2" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_br_2_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_br_2_title}" />
+							<Label class="toast-desc" text="{s:t_br_2_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_br_2_track" class="toast-track" hittest="false">
+						<Panel id="t_br_2_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+				<Panel id="t_br_3" class="toast hidden" hittest="false">
+					<Panel class="toast-body" hittest="false">
+						<Panel id="t_br_3_icon" class="toast-icon" hittest="false" />
+						<Panel class="toast-copy" hittest="false">
+							<Label class="toast-title" text="{s:t_br_3_title}" />
+							<Label class="toast-desc" text="{s:t_br_3_desc}" />
+						</Panel>
+					</Panel>
+					<Panel id="t_br_3_track" class="toast-track" hittest="false">
+						<Panel id="t_br_3_bar" class="toast-bar" hittest="false" />
+					</Panel>
+				</Panel>
+			</Panel>
+		</Panel>
+	</Panel>
+</root>

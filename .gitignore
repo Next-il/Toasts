@@ -1,0 +1,20 @@
+# Build output
+.build/
+bin/
+obj/
+*.user
+
+# The layout's compiled form. Source lives in workshop/panorama; the _c files are produced by
+# Workshop Tools and belong in a release, not in the repo.
+*.vxml_c
+*.vcss_c
+
+# Local previews from tools/preview.py, if you use them here
+previews/
+*.preview.html
+
+.vs/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
