@@ -41,8 +41,9 @@ game/csgo/addons/counterstrikesharp/
 ```
 
 `shared/` is not a convention you can ignore. CounterStrikeSharp loads assemblies from there into the
-**default** load context, which is what makes your `IToastApi` and the service's the same type. Put
-the DLL anywhere else and the capability returns null with nothing useful in the log.
+**default** load context, so every plugin resolves the same `IToastApi` type. Anywhere else and each
+plugin gets its own copy, the types stop matching, and the capability returns null with nothing
+useful in the log.
 
 ### Layout
 
@@ -78,11 +79,29 @@ css_toast_clear all
 
 Reference **only** the API assembly. Not the service, not the layout.
 
+Grab `HudMenu.Toasts.Api.dll` from a release (or from `counterstrikesharp/shared/HudMenu.Toasts.Api/`
+on a server that already runs it), drop it somewhere in your plugin repo, and reference the DLL:
+
 ```xml
-<ProjectReference Include="path/to/HudMenu.Toasts.Api.csproj" Private="false" />
+<ItemGroup>
+  <Reference Include="HudMenu.Toasts.Api">
+    <HintPath>lib\HudMenu.Toasts.Api.dll</HintPath>
+    <Private>false</Private>
+  </Reference>
+</ItemGroup>
 ```
 
-`Private="false"` matters for the reason above - a private copy is a different type.
+**`<Private>false</Private>` is the whole trick**, and it is the same arrangement VIPCore uses. It
+means "compile against this, do not copy it next to my plugin". At runtime the type resolves from
+`counterstrikesharp/shared/`, which CounterStrikeSharp loads into the **default** load context - so
+your `IToastApi` and the service's are the same type and the capability cast works.
+
+Leave it out and MSBuild copies the DLL into your plugin folder. CounterStrikeSharp then loads that
+copy into your plugin's own context, your `IToastApi` becomes a *different* type from the service's,
+and `Capability.Get()` returns null. Nothing is logged, and it looks exactly like the service is not
+installed.
+
+You do not ship that DLL with your plugin. The server already has it in `shared/`.
 
 ```csharp
 using HudMenu.Toasts;

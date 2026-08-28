@@ -57,8 +57,20 @@ toast.Clear();      // no-op if it is already gone
 
 You never have to track whether a toast is still up.
 
-**What this project references.** One thing: `HudMenu.Toasts.Api.csproj`, with `Private="false"`. Not
-the service, not `HudMenu.Shared`, not the layout. If you copy anything from this project, copy that.
+**What this project references.** One thing, and not the service, not `HudMenu.Shared`, not the
+layout. Note that it uses a `ProjectReference` because it lives *inside* this repo and the API source
+is right there. **Your plugin will not** - it references the built DLL instead:
+
+```xml
+<Reference Include="HudMenu.Toasts.Api">
+  <HintPath>lib\HudMenu.Toasts.Api.dll</HintPath>
+  <Private>false</Private>
+</Reference>
+```
+
+Either way `Private` is false, which is the part that matters: compile against it, do not copy it
+next to your plugin. The runtime type has to come from `counterstrikesharp/shared/` or the capability
+returns null. See the main README.
 
 ## If the commands say the service is not installed
 

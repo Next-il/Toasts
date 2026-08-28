@@ -12,8 +12,20 @@
   <ItemGroup>
     <!--
         The ONLY reference needed to consume toasts. Not the service, not HudMenu.Shared, not the
-        layout. Private=false because this type must resolve from counterstrikesharp/shared/ at
-        runtime - a private copy is a different type and the capability returns null.
+        layout.
+
+        This is a ProjectReference because this example lives inside the API's own repo. YOUR plugin
+        will not have that source, so it references the built DLL instead:
+
+            <Reference Include="HudMenu.Toasts.Api">
+              <HintPath>lib\HudMenu.Toasts.Api.dll</HintPath>
+              <Private>false</Private>
+            </Reference>
+
+        Private=false either way, and that is the part that matters: compile against it, do not copy
+        it next to the plugin. The runtime type must come from counterstrikesharp/shared/ so every
+        plugin resolves the same IToastApi - a private copy is a different type and the capability
+        cast returns null with nothing logged.
     -->
     <ProjectReference Include="..\HudMenu.Toasts.Api\HudMenu.Toasts.Api.csproj" Private="false" />
   </ItemGroup>
