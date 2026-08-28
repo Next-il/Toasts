@@ -165,7 +165,7 @@ what blurs the game behind a panel. Unknown properties are dropped silently.
 dotnet build Toasts.slnx -c Release
 ```
 
-CI builds every push and publishes the release layout as an artifact. Tag `v*` for a GitHub release.
+CI builds every push to `main` and cuts a release automatically - `v1`, `v2`, `v3`. PRs build without releasing.
 
 `lib/HudMenu.Shared.dll` is committed so a clone builds standalone. Replace it to pick up a newer
 library.

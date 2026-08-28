@@ -3,13 +3,23 @@ name: build
 on:
   push:
     branches: [ main ]
-    tags: [ 'v*' ]
   pull_request:
   workflow_dispatch:
+
+# Serialised: two pushes landing together would otherwise read the same "latest release" and both
+# try to create the same version.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # GITHUB_TOKEN defaults to read-only on repos created since 2023, so creating a release fails
+    # with 403 unless this is granted explicitly.
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -21,26 +31,16 @@ jobs:
       - name: Build
         run: dotnet build Toasts.slnx -c Release --nologo
 
-      # Lay the output out exactly as it drops into a server, so the artifact can be unzipped
-      # straight over addons/counterstrikesharp with nothing to move by hand.
-      #
-      # shared/ is not cosmetic: CounterStrikeSharp loads assemblies from there into the DEFAULT
-      # load context, which is what makes every plugin's IToastApi the same type. A build that
-      # puts the API DLL anywhere else produces a package where the capability silently returns
-      # null.
+      # Lay the output out exactly as it drops into a server, so the zip unpacks over
+      # addons/counterstrikesharp with nothing to move by hand.
       - name: Stage release layout
         run: |
-          mkdir -p out/gamedata out/shared out/plugins
-          cp lib/hudmenu.json                out/gamedata/
+          mkdir -p out/gamedata out/shared out/plugins out/workshop
+          cp lib/hudmenu.json                     out/gamedata/
           cp -r .build/shared/HudMenu.Toasts.Api  out/shared/
           cp -r .build/plugins/ToastService       out/plugins/
           cp -r .build/plugins/ToastExample       out/plugins/
-
-          # The Panorama source, for whoever builds the addon.
-          mkdir -p out/workshop
           cp -r workshop/panorama workshop/addoninfo.txt out/workshop/
-
-          # Symbols are useful in a bug report but not in a deploy.
           find out -name '*.pdb' -delete
 
       - name: Verify the layout
@@ -53,15 +53,13 @@ jobs:
           test -f out/plugins/ToastExample/ToastExample.dll
           test -f out/workshop/panorama/layout/custom_game/toasts.xml
 
-          # The API assembly must NOT be copied next to a plugin. Two copies means two types, and
-          # the capability cast fails at runtime with nothing useful logged - the exact bug this
-          # whole shared/ arrangement exists to prevent.
+          # The API assembly must NOT sit next to a plugin. Two copies means two types, and the
+          # capability cast fails at runtime with nothing useful logged.
           if find out/plugins -name 'HudMenu.Toasts.Api.dll' | grep -q .; then
-            echo "::error::HudMenu.Toasts.Api.dll was copied into plugins/. It must only exist in shared/ - check Private=\"false\" on the ProjectReference."
+            echo "::error::HudMenu.Toasts.Api.dll was copied into plugins/. It belongs only in shared/ - check Private=\"false\" on the reference."
             exit 1
           fi
 
-          echo "Release layout OK"
           find out -type f | sort
 
       - uses: actions/upload-artifact@v4
@@ -69,18 +67,33 @@ jobs:
           name: cs2-toasts
           path: out/
 
-      - name: Package for release
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: cd out && zip -r ../cs2-toasts-${{ github.ref_name }}.zip . -x '*.DS_Store'
+      # Everything below only on a push to main. PRs build and stop.
+      - name: Work out the next version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Read the highest existing release rather than using run_number: run_number counts PR
+          # runs too, so it would skip numbers. This gives a plain 1, 2, 3.
+          latest=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || true)
+          current=$(echo "${latest}" | grep -oE '[0-9]+$' || echo 0)
+          next=$((current + 1))
 
-      - uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/v')
-        with:
-          files: cs2-toasts-${{ github.ref_name }}.zip
-          body: |
-            Unzip over `game/csgo/addons/counterstrikesharp/`.
+          echo "previous: ${latest:-none}  next: v${next}"
+          echo "tag=v${next}" >> "$GITHUB_OUTPUT"
 
-            `shared/HudMenu.Toasts.Api/` must land in `shared/` - the capability returns null if that
-            DLL ends up anywhere else.
+      - name: Package
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: cd out && zip -qr "../cs2-toasts-${{ steps.version.outputs.tag }}.zip" . -x '*.DS_Store'
 
-            `workshop/` is the Panorama source; build it as an addon and mount it. See the README.
+      - name: Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "cs2-toasts-${{ steps.version.outputs.tag }}.zip" \
+            --target "${{ github.sha }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --generate-notes
