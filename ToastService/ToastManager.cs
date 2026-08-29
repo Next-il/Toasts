@@ -42,9 +42,24 @@ internal sealed class ToastManager : IToastApi, IDisposable
     /// this, or the next toast would pop into a panel still animating out.</summary>
     private const float ExitSeconds = 0.25f;
 
+    /// <summary>
+    /// Gap between un-collapsing a toast and starting its entry animation.
+    ///
+    /// <para>A transition needs the client to have seen the panel at its resting offset before it is
+    /// told to move. This was Server.NextFrame, which is one server frame - not necessarily a
+    /// separate network update. When both changes reach the client in one snapshot it applies them
+    /// in a single style pass, has nothing to transition from, and snaps to the end state: the toast
+    /// appears without sliding.</para>
+    ///
+    /// <para>A few ticks of wall time is the difference. 60ms is ~4 ticks at 64 and ~8 at 128, and
+    /// is not perceptible on a notification.</para>
+    /// </summary>
+    private const float EntrySeconds = 0.06f;
+
     private sealed class Slot
     {
         public ToastHandle? Toast;
+        public Timer?       Entry;
         public Timer?       Expiry;
         public Timer?       Release;
     }
@@ -127,11 +142,14 @@ internal sealed class ToastManager : IToastApi, IDisposable
 
         Paint(player, id, options);
 
-        // The classes that start the animations go a frame later. Applied in the same update as the
-        // ones that set the resting state, the client has nothing to transition FROM and both the
-        // entry and the progress bar snap straight to their end state.
-        Server.NextFrame(() =>
+        // The classes that start the animations go in a later network update - see EntrySeconds.
+        // Applied in the same update as the ones that set the resting state, the client has nothing
+        // to transition FROM and both the entry and the progress bar snap to their end state.
+        slot.Entry?.Kill();
+        slot.Entry = _plugin.AddTimer(EntrySeconds, () =>
         {
+            slot.Entry = null;
+
             if (player is not { IsValid: true } || slot.Toast != toast)
                 return;
 
@@ -139,7 +157,7 @@ internal sealed class ToastManager : IToastApi, IDisposable
 
             if (options.Progress && options.Seconds > 0f)
                 _menu.SetClassFor(player, $"{id}_bar", "run", true);
-        });
+        }, TimerFlags.STOP_ON_MAPCHANGE);
 
         if (options.Seconds > 0f)
         {
@@ -215,6 +233,11 @@ internal sealed class ToastManager : IToastApi, IDisposable
             return;
 
         toast.MarkGone();
+
+        // A toast dismissed inside the entry window must not have "show" added after it has already
+        // been told to leave - that would animate it back in and strand it.
+        slot.Entry?.Kill();
+        slot.Entry = null;
         slot.Expiry?.Kill();
         slot.Expiry = null;
 
@@ -242,9 +265,10 @@ internal sealed class ToastManager : IToastApi, IDisposable
 
         slot.Toast?.MarkGone();
         slot.Toast = null;
+        slot.Entry?.Kill();
         slot.Expiry?.Kill();
         slot.Release?.Kill();
-        slot.Expiry = slot.Release = null;
+        slot.Entry = slot.Expiry = slot.Release = null;
 
         if (player is { IsValid: true })
         {
