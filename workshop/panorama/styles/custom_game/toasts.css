@@ -56,8 +56,12 @@
         over the 3D scene is nothing at all - Valve does not use it anywhere. Every blurred panel in
         the game, from the deathnotices to the radar to the buy menu, uses world-blur.
     */
-    world-blur: gaussian(3.0);
-    background-color: gradient(linear, 0% 0%, 0% 100%, from(#12171ed6), to(#0b0f14e0));
+    /* gaussian(5.0) matches .hud-card, which is what the admin panel wears - the "you can see the
+       blurred world through it" look comes from the blur radius, not from the alpha. The alpha is
+       then pulled BELOW the admin panel's (e2/ec) so a toast reads as lighter than a full panel:
+       it is an interruption, not a surface you interact with. */
+    world-blur: gaussian(5.0);
+    background-color: gradient(linear, 0% 0%, 0% 100%, from(#12171ec4), to(#0b0f14d0));
 
     opacity: 0;
     transition-property: opacity, transform;

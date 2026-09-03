@@ -78,7 +78,7 @@ internal sealed class ToastManager : IToastApi, IDisposable
 
         _menu = Panorama.Spawn(Layout, new LayoutContract
         {
-            RootPanelId  = "PanoramaRoot",
+            RootPanelId  = "ToastRoot",
 
             // The two that matter for a notification: it must not take the mouse, and it must not
             // touch the HUD. A toast that pulls up a cursor or hides the crosshair is worse than no
@@ -86,7 +86,7 @@ internal sealed class ToastManager : IToastApi, IDisposable
             CaptureInput = false,
             HideHud      = HideHudFlags.None,
 
-            RowCount     = 1,   // no row pool; every panel is addressed directly
+            RowCount     = 0,   // no rowN pool; every panel is addressed directly
         });
 
         _menu.OnEvent += OnMenuEvent;

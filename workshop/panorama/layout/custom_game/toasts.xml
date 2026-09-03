@@ -32,7 +32,7 @@
 		container the moment the entity spawns.
 	-->
 	<Panel class="hud-screen" hittest="false">
-		<Panel id="PanoramaRoot" class="toast-screen hidden" hittest="false">
+		<Panel id="ToastRoot" class="toast-screen hidden" hittest="false">
 			<Panel class="toast-stack stack-tl" hittest="false">
 				<Panel id="t_tl_0" class="toast hidden" hittest="false">
 					<Panel class="toast-body" hittest="false">

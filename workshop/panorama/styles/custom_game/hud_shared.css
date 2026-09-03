@@ -110,8 +110,8 @@
     border-left: 3px solid #f0a531;
     /* world-blur reaches the 3D scene; background-blur only blurs UI behind UI and does nothing
        here. Valve uses world-blur on every blurred HUD panel in the game. */
-    world-blur: gaussian(3.0);
-    background-color: gradient(linear, 0% 0%, 0% 100%, from(#12171ed6), to(#0b0f14e0));
+    world-blur: gaussian(5.0);
+    background-color: gradient(linear, 0% 0%, 0% 100%, from(#12171ee2), to(#0b0f14ec));
 }
 
 /*
