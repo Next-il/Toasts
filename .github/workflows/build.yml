@@ -35,8 +35,7 @@ jobs:
       # addons/counterstrikesharp with nothing to move by hand.
       - name: Stage release layout
         run: |
-          mkdir -p out/gamedata out/shared out/plugins out/workshop
-          cp lib/panoramamanager.json                     out/gamedata/
+          mkdir -p out/shared out/plugins out/workshop
           cp -r .build/shared/PanoramaManager.Toasts.Api  out/shared/
           cp -r .build/plugins/ToastService       out/plugins/
           cp -r .build/plugins/ToastExample       out/plugins/
@@ -46,7 +45,6 @@ jobs:
       - name: Verify the layout
         run: |
           set -e
-          test -f out/gamedata/panoramamanager.json
           test -f out/shared/PanoramaManager.Toasts.Api/PanoramaManager.Toasts.Api.dll
           test -f out/plugins/ToastService/ToastService.dll
           test -f out/plugins/ToastService/PanoramaManager.dll

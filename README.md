@@ -21,7 +21,6 @@ PanoramaManager.Toasts.Api/   the contract other plugins reference
 ToastService/         the implementation
 ToastExample/         demo commands
 workshop/             the Panorama layout
-lib/                  panoramamanager.json - the engine signatures, for the server
 ```
 
 ## Install
@@ -32,8 +31,10 @@ lib/                  panoramamanager.json - the engine signatures, for the serv
 shared/PanoramaManager.Toasts.Api/     <- must be in shared/, not plugins/
 plugins/ToastService/
 plugins/ToastExample/
-gamedata/panoramamanager.json
 ```
+
+Needs CounterStrikeSharp 1.0.374 or newer - PanoramaManager drives the HUD entity through its
+`CCSCustomHudLayout` API. There is no gamedata file to install.
 
 **Layout** - copy `workshop/panorama/` into your addon's content folder and build it:
 
@@ -168,8 +169,7 @@ dotnet build Toasts.slnx -c Release
 CI builds every push to `main` and cuts a release automatically - `v1`, `v2`, `v3`. PRs build without releasing.
 
 The library comes from nuget.org - bump `PanoramaManagerVersion` in `Directory.Build.props` to
-pick up a newer one. `lib/panoramamanager.json` is the server-side gamedata file; it goes in
-`counterstrikesharp/gamedata/`.
+pick up a newer one.
 
 ## Related
 
@@ -180,7 +180,8 @@ pick up a newer one. `lib/panoramamanager.json` is the server-side gamedata file
 
 ## Credits
 
-Engine signatures in `lib/panoramamanager.json` derive from
+The reverse engineering of `custom_hud_layout` that the signature-scanning versions of
+PanoramaManager were built on came from
 [cs2-customhud](https://gitlab.com/cs2-server-plugins/cs2-customhud).
 
 MIT.

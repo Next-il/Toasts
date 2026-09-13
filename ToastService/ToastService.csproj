@@ -23,8 +23,8 @@
     <PackageReference Include="CounterStrikeSharp.API" Version="$(CounterStrikeSharpVersion)"
                       ExcludeAssets="runtime" />
 
-    <!-- Copies next to the plugin, which is what CounterStrikeSharp needs - each plugin loads
-         through a context that probes its own folder. -->
+    <!-- Copies next to the plugin because CopyLocalLockFileAssemblies is on above, which is what
+         CounterStrikeSharp needs - each plugin loads through a context that probes its own folder. -->
     <PackageReference Include="PanoramaManager" Version="$(PanoramaManagerVersion)" />
   </ItemGroup>
 
